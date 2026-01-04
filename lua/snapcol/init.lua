@@ -3,7 +3,7 @@ local state = require("snapcol.state")
 local M = {}
 
 local defaults = {
-	filetypes = { "__ALL__" },
+	filetypes = "__ALL__",
 }
 
 local opts = {}
@@ -60,13 +60,20 @@ function M.enable(bufnr)
 	vim.keymap.set("n", "k", vertical("k"), { buffer = bufnr, silent = true })
 
 	-- horizontal intent
-	for _, key in ipairs({ "h", "l", "w", "b", "e", "0", "$", "^" }) do
+	for _, key in ipairs({ "h", "l", "w", "b", "e", "$", "^" }) do
 		vim.keymap.set("n", key, function()
 			local count = vim.v.count1
 			vim.cmd("normal! " .. count .. key)
 			track_horizontal(bufnr)
 		end, { buffer = bufnr, silent = true })
 	end
+
+	-- hard reset
+	vim.keymap.set("n", "0", function()
+		vim.cmd("normal! 0")
+		local row = vim.api.nvim_win_get_cursor(0)[1]
+		state.get(bufnr).cols[row] = 0
+	end, { buffer = bufnr, silent = true })
 
 	-- mouse clicks, searches, jumps, etc.
 	vim.api.nvim_create_autocmd("CursorMoved", {
