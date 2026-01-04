@@ -3,7 +3,7 @@ local state = require("snapcol.state")
 local M = {}
 
 local defaults = {
-	filetypes = "__ALL__",
+	filetypes = nil,
 }
 
 local opts = {}
@@ -80,16 +80,6 @@ function M.enable(bufnr)
 		buf.row = vim.api.nvim_win_get_cursor(0)[1]
 		buf.col = 0
 	end, { buffer = bufnr, silent = true })
-
-	-- mouse clicks, searches, jumps, etc.
-	vim.api.nvim_create_autocmd("CursorMoved", {
-		buffer = bufnr,
-		callback = function()
-			if state.get(bufnr).enabled then
-				track_horizontal(bufnr)
-			end
-		end,
-	})
 end
 
 function M.disable(bufnr)
@@ -127,10 +117,6 @@ end
 
 function M.setup(user_opts)
 	opts = vim.tbl_deep_extend("force", defaults, user_opts or {})
-
-	if opts.filetypes == "__ALL__" then
-		opts.filetypes = nil
-	end
 
 	vim.api.nvim_create_user_command("SnapColToggle", function()
 		M.toggle()
