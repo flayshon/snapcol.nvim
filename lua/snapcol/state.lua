@@ -6,7 +6,8 @@ function M.get(bufnr)
 	if not state[bufnr] then
 		state[bufnr] = {
 			enabled = false,
-			cols = {}, -- column per line
+			row = nil,
+			col = 0,
 		}
 	end
 	return state[bufnr]

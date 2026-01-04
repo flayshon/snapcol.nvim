@@ -30,7 +30,10 @@ end
 
 local function track_horizontal(bufnr)
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-	state.get(bufnr).cols[row] = col
+	local buf = state.get(bufnr)
+
+	buf.row = row
+	buf.col = col
 end
 
 function M.enable(bufnr)
@@ -44,13 +47,16 @@ function M.enable(bufnr)
 	local function vertical(cmd)
 		return function()
 			local count = vim.v.count1
-
 			vim.cmd("normal! " .. count .. cmd)
 
 			local row = vim.api.nvim_win_get_cursor(0)[1]
-			local col = state.get(bufnr).cols[row] or 0
+			local buf = state.get(bufnr)
 
-			set_cursor_col(col)
+			if buf.row == row then
+				set_cursor_col(buf.col)
+			else
+				set_cursor_col(0)
+			end
 		end
 	end
 
