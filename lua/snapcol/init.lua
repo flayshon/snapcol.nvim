@@ -3,7 +3,7 @@ local state = require("snapcol.state")
 local M = {}
 
 local defaults = {
-	filetypes = nil, -- nil = all filetypes, table = restrict
+	filetypes = "__ALL__",
 }
 
 local opts = {}
@@ -114,6 +114,10 @@ end
 
 function M.setup(user_opts)
 	opts = vim.tbl_deep_extend("force", defaults, user_opts or {})
+
+	if opts.filetypes == "__ALL__" then
+		opts.filetypes = nil
+	end
 
 	vim.api.nvim_create_user_command("SnapColToggle", function()
 		M.toggle()
