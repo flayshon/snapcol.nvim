@@ -23,14 +23,14 @@ local function should_enable(bufnr)
 	return is_normal_buffer(bufnr) and filetype_allowed(bufnr)
 end
 
-local function set_col0()
+local function set_cursor_col(col)
 	local row = vim.api.nvim_win_get_cursor(0)[1]
-	vim.api.nvim_win_set_cursor(0, { row, 0 })
+	vim.api.nvim_win_set_cursor(0, { row, col })
 end
 
 local function track_horizontal(bufnr)
-	local pos = vim.api.nvim_win_get_cursor(0)
-	state.get(bufnr).last_col = pos[2]
+	local col = vim.api.nvim_win_get_cursor(0)[2]
+	state.get(bufnr).last_col = col
 end
 
 function M.enable(bufnr)
@@ -43,8 +43,15 @@ function M.enable(bufnr)
 
 	local function vertical(cmd)
 		return function()
-			vim.cmd("normal! " .. cmd)
-			set_col0()
+			local count = vim.v.count1
+			vim.cmd("normal! " .. count .. cmd)
+
+			local last_col = state.get(bufnr).last_col
+			if last_col and last_col > 0 then
+				set_cursor_col(last_col)
+			else
+				set_cursor_col(0)
+			end
 		end
 	end
 
@@ -55,7 +62,8 @@ function M.enable(bufnr)
 	-- horizontal intent
 	for _, key in ipairs({ "h", "l", "w", "b", "e", "0", "$", "^" }) do
 		vim.keymap.set("n", key, function()
-			vim.cmd("normal! " .. key)
+			local count = vim.v.count1
+			vim.cmd("normal! " .. count .. key)
 			track_horizontal(bufnr)
 		end, { buffer = bufnr, silent = true })
 	end
@@ -111,7 +119,6 @@ function M.setup(user_opts)
 		M.toggle()
 	end, {})
 
-	-- auto-enable for local buffers by default
 	vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
 		callback = function(args)
 			if should_enable(args.buf) then
