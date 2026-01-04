@@ -76,8 +76,9 @@ function M.enable(bufnr)
 	-- hard reset
 	vim.keymap.set("n", "0", function()
 		vim.cmd("normal! 0")
-		local row = vim.api.nvim_win_get_cursor(0)[1]
-		state.get(bufnr).cols[row] = 0
+		local buf = state.get(bufnr)
+		buf.row = vim.api.nvim_win_get_cursor(0)[1]
+		buf.col = 0
 	end, { buffer = bufnr, silent = true })
 
 	-- mouse clicks, searches, jumps, etc.
