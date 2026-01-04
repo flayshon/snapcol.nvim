@@ -3,7 +3,7 @@ local state = require("snapcol.state")
 local M = {}
 
 local defaults = {
-	filetypes = "__ALL__",
+	filetypes = { "__ALL__" },
 }
 
 local opts = {}
