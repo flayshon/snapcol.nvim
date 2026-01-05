@@ -12,7 +12,7 @@ Designed to be:
 ## How it works
 
 - `j` / `k` / `gg` / `G` always move to **absolute column 0**
-- Horizontal movement (`h`, `l`, `w`, `$`, mouse clicks, searches, jumps, etc.) updates internal cursor column memory for that line. Only the last line with horizontal movement is stored at a time.
+- Explicit horizontal movement (`h`, `l`, `w`, `$`, etc.) updates internal cursor column memory for that line. Only the last line with horizontal movement is stored at a time.
 - Toggle per buffer with `:SnapColToggle`
 
 ---
