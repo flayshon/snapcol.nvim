@@ -25,7 +25,9 @@ end
 
 local function set_cursor_col(col)
 	local row = vim.api.nvim_win_get_cursor(0)[1]
-	vim.api.nvim_win_set_cursor(0, { row, col })
+	local line = vim.api.nvim_get_current_line()
+	local max_col = math.max(#line - 1, 0)
+	vim.api.nvim_win_set_cursor(0, { row, math.min(col, max_col) })
 end
 
 local function track_horizontal(bufnr)
@@ -127,6 +129,12 @@ function M.setup(user_opts)
 			if should_enable(args.buf) then
 				M.enable(args.buf)
 			end
+		end,
+	})
+
+	vim.api.nvim_create_autocmd("BufWipeout", {
+		callback = function(args)
+			state.clear(args.buf)
 		end,
 	})
 end
