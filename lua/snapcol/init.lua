@@ -66,6 +66,34 @@ function M.enable(bufnr)
 	vim.keymap.set("n", "j", vertical("j"), { buffer = bufnr, silent = true })
 	vim.keymap.set("n", "k", vertical("k"), { buffer = bufnr, silent = true })
 
+	-- gg: go to top
+	vim.keymap.set("n", "gg", function()
+		vim.cmd("normal! gg")
+
+		local row = vim.api.nvim_win_get_cursor(0)[1]
+		local buf = state.get(bufnr)
+
+		if buf.row == row then
+			set_cursor_col(buf.col)
+		else
+			set_cursor_col(0)
+		end
+	end, { buffer = bufnr, silent = true })
+
+	-- G: go to bottom
+	vim.keymap.set("n", "G", function()
+		vim.cmd("normal! G")
+
+		local row = vim.api.nvim_win_get_cursor(0)[1]
+		local buf = state.get(bufnr)
+
+		if buf.row == row then
+			set_cursor_col(buf.col)
+		else
+			set_cursor_col(0)
+		end
+	end, { buffer = bufnr, silent = true })
+
 	-- horizontal intent
 	for _, key in ipairs({ "h", "l", "w", "b", "e", "$", "^" }) do
 		vim.keymap.set("n", key, function()
@@ -94,6 +122,8 @@ function M.disable(bufnr)
 
 	pcall(vim.keymap.del, "n", "j", { buffer = bufnr })
 	pcall(vim.keymap.del, "n", "k", { buffer = bufnr })
+	pcall(vim.keymap.del, "n", "gg", { buffer = bufnr })
+	pcall(vim.keymap.del, "n", "G", { buffer = bufnr })
 
 	for _, key in ipairs({ "h", "l", "w", "b", "e", "0", "$", "^" }) do
 		pcall(vim.keymap.del, "n", key, { buffer = bufnr })
