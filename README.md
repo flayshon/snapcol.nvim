@@ -11,22 +11,19 @@ Designed to be:
 
 ## How it works
 
-- `j` / `k` always move to **absolute column 0**
-- Horizontal movement (`h`, `l`, `w`, `$`, mouse clicks, searches, jumps, etc.) updates internal cursor column memory for that line.
-- Optional restriction to specific filetypes
+- `j` / `k` / `gg` / `G` always move to **absolute column 0**
+- Horizontal movement (`h`, `l`, `w`, `$`, mouse clicks, searches, jumps, etc.) updates internal cursor column memory for that line. Only the last line with horizontal movement is stored at a time.
 - Toggle per buffer with `:SnapColToggle`
 
 ---
 
 ## Motivation
 
-When reading or scanning code top-to-bottom, it’s often more useful for vertical movement to:
+When reading or scanning code top-to-bottom, I find it more useful for vertical movement to:
 
 - align to the start of the line
 - avoid inheriting arbitrary cursor columns
-- behave consistently across lines
-
-`snapcol.nvim` enforces that rule without breaking normal horizontal navigation.
+- behave consistently across lines visually
 
 ---
 
@@ -36,7 +33,7 @@ When reading or scanning code top-to-bottom, it’s often more useful for vertic
 {
   'flayshon/snapcol.nvim',
   opts = {
-    -- optional
+    filetypes = nil -- auto enables for every filetype
   },
 }
 ```
