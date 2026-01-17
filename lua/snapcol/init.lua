@@ -46,10 +46,15 @@ function M.enable(bufnr)
 	end
 	buf.enabled = true
 
-	local function vertical(cmd)
+	local function snap_after(cmd, bufnr, needs_count1)
 		return function()
-			local count = vim.v.count1
-			vim.cmd("normal! " .. count .. cmd)
+			local count = needs_count1 and vim.v.count1 or vim.v.count
+
+			if not needs_count1 and count == 0 then
+				vim.cmd("normal! " .. cmd)
+			else
+				vim.cmd("normal! " .. count .. cmd)
+			end
 
 			local row = vim.api.nvim_win_get_cursor(0)[1]
 			local buf = state.get(bufnr)
@@ -63,38 +68,10 @@ function M.enable(bufnr)
 	end
 
 	-- vertical movement
-	vim.keymap.set("n", "j", vertical("j"), { buffer = bufnr, silent = true })
-	vim.keymap.set("n", "k", vertical("k"), { buffer = bufnr, silent = true })
-
-	-- gg: go to top
-	vim.keymap.set("n", "gg", function()
-		local count = vim.v.count1
-		vim.cmd("normal! " .. count .. "gg")
-
-		local row = vim.api.nvim_win_get_cursor(0)[1]
-		local buf = state.get(bufnr)
-
-		if buf.row == row then
-			set_cursor_col(buf.col)
-		else
-			set_cursor_col(0)
-		end
-	end, { buffer = bufnr, silent = true })
-
-	-- G: go to bottom
-	vim.keymap.set("n", "G", function()
-		local count = vim.v.count1
-		vim.cmd("normal! " .. count .. "G")
-
-		local row = vim.api.nvim_win_get_cursor(0)[1]
-		local buf = state.get(bufnr)
-
-		if buf.row == row then
-			set_cursor_col(buf.col)
-		else
-			set_cursor_col(0)
-		end
-	end, { buffer = bufnr, silent = true })
+	vim.keymap.set("n", "j", snap_after("j", bufnr, true), { buffer = bufnr, silent = true })
+	vim.keymap.set("n", "k", snap_after("k", bufnr, true), { buffer = bufnr, silent = true })
+	vim.keymap.set("n", "G", snap_after("G", bufnr, false), { buffer = bufnr, silent = true })
+	vim.keymap.set("n", "gg", snap_after("gg", bufnr, false), { buffer = bufnr, silent = true })
 
 	-- horizontal intent
 	for _, key in ipairs({ "h", "l", "w", "b", "e", "$", "^" }) do
