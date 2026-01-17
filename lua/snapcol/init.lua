@@ -68,7 +68,8 @@ function M.enable(bufnr)
 
 	-- gg: go to top
 	vim.keymap.set("n", "gg", function()
-		vim.cmd("normal! gg")
+		local count = vim.v.count1
+		vim.cmd("normal! " .. count .. "gg")
 
 		local row = vim.api.nvim_win_get_cursor(0)[1]
 		local buf = state.get(bufnr)
@@ -82,7 +83,8 @@ function M.enable(bufnr)
 
 	-- G: go to bottom
 	vim.keymap.set("n", "G", function()
-		vim.cmd("normal! G")
+		local count = vim.v.count1
+		vim.cmd("normal! " .. count .. "G")
 
 		local row = vim.api.nvim_win_get_cursor(0)[1]
 		local buf = state.get(bufnr)
